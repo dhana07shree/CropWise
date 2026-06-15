@@ -211,18 +211,6 @@ WEATHER_API_KEY=your_weather_api_key
 
 ---
 
-## Model Setup
-
-Place the trained model file at:
-
-```text
-backend/models/best_plant_model.keras
-```
-
-The model file is not included in this repository due to its large size.
-
----
-
 ## Running the Backend
 
 Navigate to the backend directory and start the FastAPI server:
