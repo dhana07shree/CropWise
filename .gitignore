@@ -12,8 +12,6 @@ env/
 temp_uploads/
 backend/temp_uploads/
 
-*.keras
-
 .ipynb_checkpoints/
 
 .vscode/
