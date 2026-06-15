@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CropWise – Crop Assistant</title>
+  <link rel="stylesheet" href="style.css"/>
+  <style>
+    .page-header {
+      background: linear-gradient(135deg, var(--green-dark), #1e5c3a);
+      padding: 40px 5%; color: white;
+    }
+    .page-header h1 { font-size: clamp(1.5rem, 3vw, 2.2rem); font-weight: 800; margin-bottom: 6px; }
+    .page-header p  { color: rgba(255,255,255,0.72); font-size: 0.95rem; }
+
+    .chat-outer {
+      max-width: 860px; margin: 32px auto;
+      padding: 0 5%;
+      display: flex; flex-direction: column; gap: 20px;
+    }
+    .chat-box {
+      background: var(--bg-white);
+      border: 1px solid var(--border);
+      border-radius: 16px; overflow: hidden;
+      display: flex; flex-direction: column;
+      height: 600px; box-shadow: var(--shadow);
+    }
+
+    .chat-header {
+      background: var(--green-dark); padding: 16px 20px;
+      display: flex; align-items: center; gap: 12px;
+    }
+    
+    .bot-info h4 { color: white; font-size: 0.95rem; font-family: 'Poppins', sans-serif; }
+    .bot-info p  { color: rgba(255,255,255,0.6); font-size: 0.78rem; }
+   
+
+    .messages {
+      flex: 1; overflow-y: auto; padding: 20px;
+      display: flex; flex-direction: column; gap: 14px;
+      scroll-behavior: smooth;
+    }
+    .messages::-webkit-scrollbar { width: 5px; }
+    .messages::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+   .msg {
+     max-width:85%;
+     margin-bottom:12px;
+    }
+    .msg.user {  align-self: flex-end; }
+    .msg.bot  { align-self: flex-start; }
+    .msg-bubble {
+      padding: 12px 16px; border-radius: 14px;
+      font-size: 0.92rem; line-height: 1.65;
+      white-space: normal;
+    }
+  
+    .msg.bot .msg-bubble {
+      background: #f5f9f5; border: 1px solid var(--border);
+      border-top-left-radius: 4px; color: var(--text-dark);
+    }
+    .msg.user .msg-bubble {
+      background: var(--green-dark); color: white;
+      border-top-right-radius: 4px;
+    }
+
+    .msg-bubble strong { font-weight: 700; }
+    .msg-bubble em { font-style: italic; }
+    .msg-bubble p { margin-bottom: 8px; }
+    .msg-bubble p:last-child { margin: 0; }
+    .msg-bubble ul, .msg-bubble ol { padding-left: 18px; margin: 6px 0; }
+    .msg-bubble li { margin-bottom: 4px; }
+    .msg-bubble h3 { font-size: 0.95rem; color: var(--green-dark); margin: 10px 0 6px; font-family: 'Poppins', sans-serif; }
+
+   
+    .typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
+    .typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
+   
+
+    .chat-input-bar {
+      padding: 14px 16px;
+      border-top: 1px solid var(--border);
+      display: flex; gap: 10px; background: white;
+    }
+    .chat-input {
+      flex: 1; padding: 11px 16px;
+      border: 1.5px solid var(--border); border-radius: 10px;
+      font-size: 0.92rem; font-family: 'Inter', sans-serif;
+      outline: none; transition: border-color 0.2s;
+      resize: none; height: 44px; line-height: 1.4;
+    }
+    .chat-input:focus { border-color: var(--green-mid); }
+    .send-btn {
+      width: 44px; height: 44px;
+      background: var(--green-mid); border: none;
+      border-radius: 10px; color: white; font-size: 1.1rem;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; transition: background 0.2s;
+    }
+    .send-btn:hover { background: var(--green-dark); }
+    .send-btn:disabled { background: var(--border); cursor: not-allowed; }
+  </style>
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="navbar-brand">
+    <span class="leaf-icon">🌿</span>
+    <span>Crop<span class="brand-accent">Wise</span></span>
+  </div>
+  <button class="nav-toggle" onclick="toggleNav()" aria-label="Toggle menu">☰</button>
+  <ul class="nav-links" id="navLinks">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="diagnose.html">Diagnose</a></li>
+    <li><a href="chatbot.html" class="active">Crop Assistant</a></li>
+  </ul>
+</nav>
+
+<div class="page-header">
+  <h1> CropWise Assistant</h1>
+  <p>Your AI agronomist — ask anything about plants, diseases, soil, farming, and more.</p>
+</div>
+
+<div class="chat-outer">
+  <div class="chat-box">
+
+  <div class="chat-header">
+    <div class="bot-info">
+      <h4>CropWise Botanical Intelligence</h4>
+      <p>Expert AI Agronomist & Plant Pathologist</p>
+    </div>
+  </div>
+
+  <div class="messages" id="messages">
+    <div class="msg bot">
+      <div>
+        <div class="msg-bubble">
+          Welcome to CropWise Botanical Intelligence!
+          Ask me anything about plant diseases, crop health,
+          fertilizers, soil management, pest control, or farming.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="chat-input-bar">
+    <input
+      type="text"
+      class="chat-input"
+      id="chatInput"
+      placeholder="Ask about plant diseases, farming, soil health..."
+      onkeydown="handleKey(event)"
+    >
+
+    <button
+      class="send-btn"
+      onclick="sendMessage()"
+    >
+      ➤
+    </button>
+  </div>
+
+</div>
+
+</div>
+
+<footer class="footer">
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <div class="navbar-brand" style="margin-bottom:10px;">
+        <span class="leaf-icon">🌿</span>
+        <span>Crop<span class="brand-accent">Wise</span></span>
+      </div>
+      <p>Empowering farmers with AI-driven plant health insights and crop intelligence.</p>
+    </div>
+    <div>
+      <h4>Quick Links</h4>
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="diagnose.html">Plant Diagnosis</a></li>
+        <li><a href="chatbot.html">Crop Assistant</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4>What We Offer</h4>
+      <ul>
+        <li><a href="#">Multiple Crop Types</a></li>
+        <li><a href="#">Multilingual AI</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    &copy;  2026 CropWise. Empowering smarter farming with AI-driven insights.
+  </div>
+</footer>
+
+<script src="script.js"></script>
+<script>
+const API_BASE = "http://localhost:8000";
+
+function appendMessage(role, text) {
+
+    const messages =
+    document.getElementById("messages");
+
+    const div =
+    document.createElement("div");
+
+    div.className = `msg ${role}`;
+
+   div.innerHTML = `
+  <div>
+      <div class="msg-bubble">
+        ${text.replace(/\*\*(.*?)\*\*/g, "<b>$1</b>").replace(/\n/g, "<br>")}
+      </div>
+  </div>`;
+
+    messages.appendChild(div);
+
+}
+
+async function sendMessage() {
+
+    const input =
+    document.getElementById("chatInput");
+
+    const msg =
+    input.value.trim();
+
+    if (!msg) return;
+
+    appendMessage("user", msg);
+
+    input.value = "";
+
+    try {
+        const formData =
+        new FormData();
+
+        formData.append(
+            "message",
+            msg
+        );
+        const response =
+        await fetch(
+            `${API_BASE}/api/chat`,
+            {
+                method: "POST",
+                body: formData
+            }
+        );
+
+        if (!response.ok) {
+            appendMessage(
+                "bot",
+                "Error connecting to server."
+            );
+
+            return;
+        }
+
+        const data =
+        await response.json();
+
+        appendMessage(
+            "bot",
+            data.reply
+        );
+
+    }
+    catch(error) {
+
+        appendMessage(
+            "bot",
+            "Could not connect to backend."
+        );
+    }
+}
+
+function handleKey(event) {
+
+    if (
+        event.key === "Enter"
+    ) {
+
+        event.preventDefault();
+        sendMessage();
+    }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CropWise – Diagnose Your Plant</title>
+  <link rel="stylesheet" href="style.css"/>
+  <style>
+    .page-header {
+      background: linear-gradient(135deg, var(--green-dark), #1e5c3a);
+      padding: 48px 5%; color: white;
+    }
+    .page-header h1 { font-size: clamp(1.6rem, 3vw, 2.4rem); font-weight: 800; margin-bottom: 8px; }
+    .page-header p  { color: rgba(255,255,255,0.72); font-size: 0.97rem; }
+
+    /* ── INPUT SECTION ── */
+    .input-section {
+      max-width: 1200px;
+      margin: 40px auto 0;
+      padding: 0 5%;
+      margin-bottom: 40px;
+    }
+    .input-grid {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr 0.9fr;
+      gap: 20px;
+      align-items: stretch;
+    }
+    .input-grid > .card { padding: 22px; }
+
+    .upload-area {
+      border: 2.5px dashed var(--border);
+      border-radius: 14px;
+      padding: 36px 24px;
+      text-align: center;
+      background: var(--bg-light);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+    .upload-area:hover, .upload-area.dragover {
+      border-color: var(--green-mid);
+      background: #edf7f1;
+    }
+    .upload-icon { font-size: 2.5rem; margin-bottom: 12px; }
+    .upload-area p { font-size: 0.92rem; color: var(--text-mid); font-weight: 500; }
+    .upload-area span { font-size: 0.78rem; color: var(--text-light); margin-top: 4px; }
+
+    .preview-box {
+      width: 100%;
+      height: 180px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: #fafafa;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      position: relative;
+    }
+    .preview-box img { width: 100%; height: 100%; object-fit: cover; }
+    .no-img { font-size: 0.85rem; color: var(--text-light); font-style: italic; margin-left: 15px; }
+
+    .form-group { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
+    .form-group label { font-size: 0.85rem; font-weight: 700; color: var(--green-dark); text-transform: uppercase; letter-spacing: 0.05em; }
+    .form-group input {
+      padding: 12px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 0.95rem;
+      font-family: inherit;
+      color: var(--text-dark);
+    }
+    .form-group input:focus { outline: none; border-color: var(--green-mid); box-shadow: 0 0 0 3px rgba(45,138,78,0.12); }
+
+    .btn-diag {
+      width: 100%;
+      background: var(--green-mid);
+      color: white;
+      padding: 14px;
+      border: none;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 1rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      transition: background 0.15s ease;
+    }
+    .btn-diag:hover { background: #236d3d; }
+    .btn-diag:disabled { background: var(--text-light); cursor: not-allowed; }
+
+    /* ── RESULTS LAYOUT ── */
+    .results-container {
+      max-width: 1200px;
+      margin: 32px auto 80px;
+      padding: 0 5%;
+      display: flex;
+      flex-direction: column;
+      gap: 28px;
+    }
+    .hidden { display: none !important; }
+
+    /* Headline Profile Layout */
+    .headline-card-grid {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 24px;
+    }
+    .headline-main { display: flex; align-items: center; gap: 18px; }
+    .headline-icon { font-size: 3rem; background: #e8f5ed; width: 72px; height: 72px; display: flex; align-items: center; justify-content: center; border-radius: 50%; }
+    .headline-info h2 { font-size: 1.1rem; font-weight: 600; color: var(--green-dark); margin-bottom: 4px; }
+    .headline-info h3 { font-size: 1.8rem; font-weight: 800; color: #c0392b; margin-top: 6px; padding-top: 8px;  }
+    .headline-meta { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; text-align: right; }
+    .live-badge { font-size: 0.82rem; font-weight: 700; background: #ebf5ff; color: #0066cc; padding: 4px 12px; border-radius: 20px; }
+
+    /* Micro-climate Parameter Rows */
+    .weather-row-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+    }
+    .w-item {
+      background: var(--bg-light);
+      padding: 16px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      border: 1px solid var(--border);
+    }
+    .w-icon { font-size: 1.6rem; }
+    .w-val { font-size: 1.15rem; font-weight: 700; color: var(--text-dark); }
+    .w-lbl { font-size: 0.78rem; color: var(--text-light); text-transform: uppercase; font-weight: 600; }
+
+    /* Core Report Topology Layout */
+    .report-split-grid {
+      display: grid;
+      grid-template-columns: 1fr 1.2fr;
+      gap: 28px;
+      align-items: start;
+    }
+    .report-pane { display: flex; flex-direction: column; gap: 28px; }
+
+    .card h3 { font-size: 1.15rem; font-weight: 800; color: var(--green-dark); margin-bottom: 16px; display: flex; align-items: center; gap: 10px; border-bottom: 2px solid var(--bg-light); padding-bottom: 10px; }
+    .card p { font-size: 0.95rem; color: var(--text-mid); line-height: 1.6; }
+
+    .severity-box { display: flex; align-items: center; gap: 20px; background: #fffaf0; border: 1px solid #ffe8cc; padding: 16px; border-radius: 10px; }
+    .sev-tier { font-size: 1.2rem; font-weight: 800; padding: 6px 14px; border-radius: 6px; }
+    .tier-none { background: #dcf5e7; color: var(--green-dark); }
+    .tier-low { background: #fff3cd; color: #856404; }
+    .tier-medium { background: #ffe8cc; color: #c17d11; }
+    .tier-high { background: #f8d7da; color: #721c24; }
+    .tier-critical { background: #721c24; color: white; }
+
+    /* Cost Table System Elements */
+    .cost-box-layout { display: flex; flex-direction: column; gap: 16px; }
+    .cost-card { border: 1px solid var(--border); border-radius: 10px; padding: 16px; }
+    .cost-card.org { border-left: 4px solid var(--green-mid); background: #f9fdfa; }
+    .cost-card.chem { border-left: 4px solid #3182ce; background: #f7fafc; }
+    .cost-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; font-weight: 700; }
+    .cost-title { font-size: 0.95rem; color: var(--text-dark); }
+    .cost-amt { font-size: 1.1rem; color: var(--green-dark); }
+
+    /* Checklist Timelines */
+    .chk-list { display: flex; flex-direction: column; gap: 14px; list-style: none; }
+    .chk-item { display: flex; gap: 14px; align-items: flex-start; }
+    .chk-day { font-size: 0.8rem; font-weight: 700; background: var(--green-dark); color: white; padding: 2px 8px; border-radius: 4px; min-width: 52px; text-align: center; margin-top: 2px; }
+    .chk-txt { font-size: 0.92rem; color: var(--text-mid); line-height: 1.5; }
+
+    /* Bullet lists */
+    .bullet-list { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+    .bullet-list li { font-size: 0.92rem; color: var(--text-mid); padding-left: 18px; position: relative; line-height: 1.5; }
+    .bullet-list li::before { content: '•'; color: var(--green-light); font-size: 1.2rem; position: absolute; left: 0; top: -2px; }
+
+    /* Analysis Rankings Table Grid */
+    .rank-table { width: 100%; border-collapse: collapse; text-align: left; margin-top: 8px; }
+    .rank-table th { font-size: 0.8rem; text-transform: uppercase; color: var(--text-light); letter-spacing: 0.05em; padding: 10px 12px; border-bottom: 2px solid var(--border); }
+    .rank-table td { padding: 12px; border-bottom: 1px solid var(--bg-light); font-size: 0.92rem; color: var(--text-dark); }
+    .rank-num { background: var(--bg-light); color: var(--green-dark); width: 24px; height: 24px; display: inline-flex; align-items: center; justify-content: center; border-radius: 50%; font-weight: 700; font-size: 0.8rem; }
+
+    /* Feedbacks & Spinners */
+    .loading-container { text-align: center; padding: 60px 0; }
+    .spinner { border: 4px solid rgba(45,138,78,0.12); border-left-color: var(--green-mid); width: 44px; height: 44px; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 16px; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .error-container { background: #fff5f5; border: 1px solid #fed7d7; color: #c53030; padding: 16px 20px; border-radius: 10px; font-weight: 500; font-size: 0.95rem; display: flex; align-items: center; gap: 12px; max-width: 1200px; margin: 24px auto 0; }
+
+    @media(max-width: 900px) {
+      .input-grid, .report-split-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+ <nav class="navbar">
+  <div class="navbar-brand">
+    <span class="leaf-icon">🌿</span>
+    <span>Crop<span class="brand-accent">Wise</span></span>
+  </div>
+  <button class="nav-toggle" onclick="toggleNav()" aria-label="Toggle menu">☰</button>
+  <ul class="nav-links" id="navLinks">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="diagnose.html" class="active">Diagnose</a></li>
+    <li><a href="chatbot.html" >Crop Assistant</a></li>
+  </ul>
+</nav>
+
+  <header class="page-header">
+    <h1>Smart Crop Health Analysis</h1>
+    <p>Upload a leaf image and receive a complete crop health assessment with treatment recommendations and practical recovery guidance.</p>
+  </header>
+
+  <section class="input-section">
+    <div class="input-grid">
+      
+      <div class="card">
+        <input type="file" id="fileInput" accept="image/*" class="hidden" onchange="previewImage(this)"/>
+        <div class="upload-area" id="dropZone" onclick="document.getElementById('fileInput').click()">
+          <div class="upload-icon"></div>
+          <p>Upload Leaf Image</p>
+          <span>Supports PNG, JPG, JPEG, WEBP</span>
+        </div>
+      </div>
+
+      <div class="card" style="display:flex; flex-direction:column; gap:12px;">
+        <div class="form-group" style="margin:0;">
+          <label>Image Preview</label>
+        </div>
+        <div class="preview-box" id="previewBox">
+          <span class="no-img">Your uploaded leaf image will appear here.</span>
+        </div>
+      </div>
+
+      <div class="card" style="display:flex; flex-direction:column; justify-content: space-between;">
+        <div class="form-group">
+          <label for="cityInput">Location (City)</label>
+          <input type="text" id="cityInput" placeholder="e.g., Delhi, Mumbai, Pune" />
+        </div>
+        <button id="diagBtn" class="btn-diag" onclick="triggerPipeline()">
+          <span>Start Diagnosis</span>
+          <span>→</span>
+        </button>
+      </div>
+
+    </div>
+  </section>
+
+  <div id="errorLog" class="error-container hidden"></div>
+  
+  <div id="loadingTracker" class="loading-container hidden">
+    <div class="spinner"></div>
+    <p style="color:var(--text-mid); font-weight:600; font-size:0.95rem;">Analyzing...</p>
+  </div>
+
+  <main id="resultsManifest" class="results-container hidden">
+    
+    <div class="card" id="headlineCard">
+      <div class="headline-card-grid">
+        <div class="headline-main">
+          <div class="headline-icon" id="hcIcon">🍃</div>
+          <div class="headline-info">
+            <h2 id="hcPlant">Target Crop Taxonomy</h2>
+            <h3 id="hcDisease">Classifying Matrix Pathology...</h3>
+          </div>
+        </div>
+        <div class="headline-meta">
+          <span class="badge" id="hcStatus" style="background:var(--green-dark); color:white;">Completed</span>
+          <span class="live-badge" id="hcCity">📍 Regional Location</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" id="weatherCard">
+      <h3>🌤️ Current Weather Conditions</h3>
+      <div class="weather-row-grid">
+        <div class="w-item">
+          <div class="w-icon">🌡️</div>
+          <div>
+            <div class="w-val" id="wTemp">—</div>
+            <div class="w-lbl">Temperature Index</div>
+          </div>
+        </div>
+        <div class="w-item">
+          <div class="w-icon">💧</div>
+          <div>
+            <div class="w-val" id="wHumid">—</div>
+            <div class="w-lbl">Relative Air Moisture</div>
+          </div>
+        </div>
+        <div class="w-item">
+          <div class="w-icon">💨</div>
+          <div>
+            <div class="w-val" id="wWind">—</div>
+            <div class="w-lbl">Wind Dynamic Velocity</div>
+          </div>
+        </div>
+        <div class="w-item">
+          <div class="w-icon">☁️</div>
+          <div>
+            <div class="w-val" id="wCond">—</div>
+            <div class="w-lbl">Atmosphere Status</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="report-split-grid">
+      
+      <div class="report-pane">
+        
+        <div class="card" id="severityCard">
+          <h3>📊 Disease Severity</h3>
+          <div class="severity-box">
+            <span class="sev-tier" id="sevTier">None</span>
+            <p id="sevJustification" style="margin:0; font-size:0.92rem;"></p>
+          </div>
+        </div>
+
+        <div class="card" id="diseaseProfileCard">
+          <h3>📖 About the Disease</h3>
+          <p id="diseaseDesc" style="margin-bottom:14px;"></p>
+          <div style="font-weight:700; font-size:0.85rem; color:var(--green-dark); text-transform:uppercase; margin-bottom:8px;">Primary Environmental Triggers:</div>
+          <ul class="bullet-list" id="diseaseCauses"></ul>
+        </div>
+
+        <div class="card" id="climateAdvisoryCard">
+          <h3>🌦️ Weather Impact Analysis</h3>
+          <p id="climateRisk" style="margin-bottom:12px;"></p>
+          <p id="climateWarning" style="background:#fff5f5; border-left:4px solid #e53e3e; padding:10px; font-size:0.9rem; font-weight:500; color:#c53030;"></p>
+        </div>
+
+      </div>
+
+      <div class="report-pane">
+        
+        <div class="card" id="costCard">
+          <h3>💰 Treatment Cost Estimate</h3>
+          <div class="cost-box-layout">
+            <div class="cost-card org">
+              <div class="cost-header">
+                <span class="cost-title">Organic Treatments</span>
+                <span class="cost-amt" id="costOrgAmt">₹0</span>
+              </div>
+              <ul class="bullet-list" id="costOrgMethods"></ul>
+            </div>
+            <div class="cost-card chem">
+              <div class="cost-header">
+                <span class="cost-title">Chemical Treatments</span>
+                <span class="cost-amt" id="costChemAmt">₹0</span>
+              </div>
+              <ul class="bullet-list" id="costChemMethods"></ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" id="timelineCard">
+          <h3>🗓️ Recovery Plan & Timeline</h3>
+          <div style="font-weight:600; color:var(--text-light); font-size:0.88rem; margin-bottom:14px;">Estimated Stability/Recovery: <span id="recoveryDays" style="color:var(--green-dark); font-weight:700;">—</span></div>
+          <ul class="chk-list" id="timelineChecklist"></ul>
+        </div>
+
+        <div class="card" id="preventiveCard">
+          <h3>🛡️ Prevention Tips</h3>
+          <ul class="bullet-list" id="preventiveList"></ul>
+        </div>
+
+        <div class="card" id="rankingCard">
+          <h3>🏆 Recommended Treatments</h3>
+          <table class="rank-table">
+            <thead>
+              <tr>
+                <th>Rank</th>
+                <th> Treatment</th>
+                <th>Effectiveness</th>
+                <th>Cost</th>
+              </tr>
+            </thead>
+            <tbody id="rankingBody"></tbody>
+          </table>
+        </div>
+
+      </div>
+
+    </div>
+
+  </main>
+
+  <footer class="footer">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="navbar-brand" style="margin-bottom:10px;">
+          <span class="leaf-icon">🌿</span>
+          <span>Crop<span class="brand-accent">Wise</span></span>
+        </div>
+        <p>AI-powered plant disease detection and agronomic advisory platform. Built for Indian farmers and agricultural professionals.</p>
+      </div>
+      <div>
+        <h4>Quick Links</h4>
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="diagnose.html">Plant Diagnosis</a></li>
+          <li><a href="chatbot.html">Crop Assistant</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>What We Offer</h4>
+        <ul>
+          <li><a href="#">38 Categorical Disease Classes</a></li>
+          <li><a href="#">Location-Based Guidance</a></li>
+          <li><a href="#">Personalized Recommendations</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      &copy; 2026 CropWise. Empowering smarter farming with AI-driven insights.
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+  <script>
+    const API_BASE = "http://127.0.0.1:8000";
+    let bufferedFile = null;
+
+    function show(id) { document.getElementById(id).classList.remove('hidden'); }
+    function hide(id) { document.getElementById(id).classList.add('hidden'); }
+
+    // Visual buffers
+    function previewImage(input) {
+      const box = document.getElementById('previewBox');
+      if (input.files && input.files[0]) {
+        bufferedFile = input.files[0];
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          box.innerHTML = `<img src="${e.target.result}" alt="Preview Target" />`;
+        }
+        reader.readAsDataURL(input.files[0]);
+      }
+    }
+
+    // Pipeline activation handler
+    async function triggerPipeline() {
+      const cityInput = document.getElementById('cityInput').value.trim();
+      const errBox = document.getElementById('errorLog');
+      const diagBtn = document.getElementById('diagBtn');
+
+      errBox.classList.add('hidden');
+
+      if (!bufferedFile) {
+        errBox.textContent = "❌ Request Denied: Please upload a leaf image sample first.";
+        errBox.classList.remove('hidden');
+        return;
+      }
+      if (!cityInput) {
+        errBox.textContent = "❌ Request Denied: A regional city location is required.";
+        errBox.classList.remove('hidden');
+        return;
+      }
+
+      // Lock buttons and reveal processing spinners
+      diagBtn.disabled = true;
+      hide('resultsManifest');
+      show('loadingTracker');
+
+      try {
+        const payload = new FormData();
+        payload.append('image', bufferedFile);
+        payload.append('city', cityInput);
+
+        const response = await fetch(`${API_BASE}/api/diagnose`, {
+          method: 'POST',
+          body: payload
+        });
+
+        hide('loadingTracker');
+
+        if (!response.ok) {
+          const failureData = await response.json();
+          errBox.textContent = `⚠️ Core Pipeline Error: ${failureData.detail || 'Failed processing data elements.'}`;
+          errBox.classList.remove('hidden');
+          diagBtn.disabled = false;
+          return;
+        }
+
+        const data = await response.json();
+        renderPayloadData(data);
+
+      } catch (err) {
+        hide('loadingTracker');
+        errBox.textContent = `❌ Server Network Timeout: Cannot resolve linkage to API routing paths. Verify backend is running on ${API_BASE}`;
+        errBox.classList.remove('hidden');
+        diagBtn.disabled = false;
+      }
+    }
+
+    // Pure Data Mapping Node Engine (Strips out all confidence rating fields)
+    function renderPayloadData(data) {
+      const vision = data.vision_metadata || {};
+      const weather = data.live_environment || {};
+      const report = data.ai_report || {};
+      const uiMeta = data.frontend_ui_meta || {};
+
+      // 1. Headline updates
+      document.getElementById('hcPlant').textContent = vision.target_plant || " ";
+      document.getElementById('hcDisease').textContent = vision.detected_condition || 'Healthy / Clean Matrix';
+      document.getElementById('hcCity').textContent = `📍 ${weather.city || " "}`;
+      
+      const badge = document.getElementById('hcStatus');
+      badge.textContent = uiMeta.badge_text || 'Analysis Completed';
+      badge.style.background = uiMeta.ui_color_hex || '#2d8a4e';
+
+      // Emoji swap for target classifications
+      const iconBox = document.getElementById('hcIcon');
+      if((vision.detected_condition || '').toLowerCase().includes('healthy')) {
+        iconBox.textContent = '🌿';
+      } else {
+        iconBox.textContent = '🍂';
+      }
+
+      // 2. Weather mapping
+      document.getElementById('wTemp').textContent = weather.temperature_celsius != null ? `${weather.temperature_celsius}°C` : '—';
+      document.getElementById('wHumid').textContent = weather.humidity_percentage != null ? `${weather.humidity_percentage}%` : '—';
+      document.getElementById('wWind').textContent = weather.wind_speed_kmh != null ? `${weather.wind_speed_kmh} km/h` : '—';
+      document.getElementById('wCond').textContent = weather.weather_condition || '—';
+
+      // 3. Severity layout metrics
+      const sev = report.severity_estimation || {};
+      document.getElementById('sevTier').textContent = sev.tier || 'None';
+      document.getElementById('sevJustification').textContent = sev.justification || 'No disease details available.';
+
+      // 4. Biological Description Profiles
+      const info = report.disease_information || {};
+      document.getElementById('diseaseDesc').textContent = info.description || 'No description available.';
+      renderBulletList('diseaseCauses', info.primary_causes || []);
+
+      // 5. Climate risk panels
+      const climate = report.micro_climate_advisory || {};
+      document.getElementById('climateRisk').textContent = climate.risk_assessment || 'Weather analysis not available.';
+      document.getElementById('climateWarning').textContent = climate.actionable_warning ||'No weather recommendations available.';
+
+      // 6. Cost systems mapping
+      const cost = report.cost_estimation || {};
+      const orgBox = cost.organic_treatment || {};
+      const chemBox = cost.chemical_treatment || {};
+      
+      document.getElementById('costOrgAmt').textContent = orgBox.price_range_inr || 'Not needed';
+      renderBulletList('costOrgMethods', orgBox.methods || []);
+      
+      document.getElementById('costChemAmt').textContent = chemBox.price_range_inr || 'Not needed';
+      renderBulletList('costChemMethods', chemBox.methods || []);
+
+      // 7. Timeline mappings
+      const timeline = report.recovery_timeline || {};
+      document.getElementById('recoveryDays').textContent = timeline.expected_recovery_days || 'Stable';
+      
+      const timelineList = document.getElementById('timelineChecklist');
+      timelineList.innerHTML = '';
+      (timeline.interactive_checklist || []).forEach(item => {
+        const li = document.createElement('li');
+        li.className = 'chk-item';
+        li.innerHTML = `<span class="chk-day">Day ${item.day || '?'}</span><span class="chk-txt">${item.task || ''}</span>`;
+        timelineList.appendChild(li);
+      });
+
+      // 8. Permanent Prevention Protocols
+      renderBulletList('preventiveList', report.preventive_measures || []);
+
+      // 9. Priorities rankings matrix elements
+      const rankBody = document.getElementById('rankingBody');
+      rankBody.innerHTML = '';
+      (report.recommendation_ranking || []).forEach(row => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td><span class="rank-num">${row.rank || '1'}</span></td>
+          <td><strong>${row.treatment_name || 'Routine Check'}</strong></td>
+          <td style="color:var(--green-mid); font-weight:700;">${row.effectiveness || 'Stable'}</td>
+          <td>${row.cost_tier || 'N/A'}</td>
+        `;
+        rankBody.appendChild(tr);
+      });
+
+      // Show final layouts and scroll down smoothly to view manifest arrays
+      show('resultsManifest');
+      document.getElementById('diagBtn').disabled = false;
+      document.getElementById('headlineCard').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    function renderBulletList(elementId, itemsArray) {
+      const targetUl = document.getElementById(elementId);
+      targetUl.innerHTML = '';
+      if(!itemsArray || itemsArray.length === 0) {
+        const li = document.createElement('li');
+        li.textContent = 'None required/specified.';
+        targetUl.appendChild(li);
+        return;
+      }
+      itemsArray.forEach(text => {
+        const li = document.createElement('li');
+        li.textContent = text;
+        targetUl.appendChild(li);
+      });
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,14 @@
+fastapi>=0.115.0
+uvicorn>=0.30.0
+python-multipart>=0.0.9
+
+tensorflow>=2.16.0
+numpy>=1.26.0
+pillow>=10.0.0
+
+python-dotenv>=1.0.0
+requests>=2.32.0
+
+langchain>=0.3.0
+langchain-core>=0.3.0
+langchain-groq>=0.2.0
