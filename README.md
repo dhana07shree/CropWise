@@ -5,12 +5,11 @@ An end-to-end AI-powered agricultural platform that combines **Computer Vision, 
 ---
 
 ## 🚀 Live Demo
-
-🔗 **Frontend:** https://crop-wise-fawn.vercel.app/
+ https://crop-wise-fawn.vercel.app/
 
 ---
 
-## 📸 Project Screenshots
+<!-- ## 📸 Project Screenshots
 
 ### 🏠 Home Page
 
@@ -34,7 +33,7 @@ An end-to-end AI-powered agricultural platform that combines **Computer Vision, 
 
 ![Chatbot](screenshots/chatbot.png)
 
----
+--- -->
 
 # 📖 Overview
 
