@@ -1,344 +1,306 @@
-🌿 CropWise -- AI-Powered Crop Disease Diagnosis & Advisory Platform
+# 🌿 CropWise – AI-Powered Crop Disease Diagnosis & Advisory Platform
 
+An end-to-end AI-powered agricultural platform that combines **Computer Vision, Deep Learning, Weather Intelligence, and Generative AI** to diagnose crop diseases and provide personalized treatment recommendations.
 
+---
 
-An end-to-end AI platform that combines Computer Vision, DeepLearning, Real-Time Weather Intelligence, and Generative AI todiagnose crop diseases and generate personalized treatmentrecommendations.
+## 🚀 Live Demo
 
-🚀 Live Demo
+🔗 **Frontend:** https://crop-wise-fawn.vercel.app/
 
-Replace the links below after deployment.
+---
 
-<!-- 🌐 Frontend:https://your-vercel-link.vercel.app
+## 📸 Project Screenshots
 
-⚙ Backend API:https://your-render-link.onrender.com
-
-📄 Swagger API Docs:https://your-render-link.onrender.com/docs -->
-https://crop-wise-fawn.vercel.app/
-
-📸 Project Screenshots
-
-Create a folder named screenshots/ and add the images below.
-
-🏠 Home Page
-
-screenshots/home.png
-
-🔍 Disease Diagnosis
-
-screenshots/diagnosis.png
-
-📊 AI Advisory Report
-
-screenshots/report.png
-
-🤖 AI Chatbot
-
-screenshots/chatbot.png
-
-After adding images, replace the placeholders with:
+### 🏠 Home Page
 
 ![Home](screenshots/home.png)
+
+---
+
+### 🔍 Disease Diagnosis
+
 ![Diagnosis](screenshots/diagnosis.png)
+
+---
+
+### 📊 AI Advisory Report
+
 ![Report](screenshots/report.png)
+
+---
+
+### 🤖 AI Chatbot
+
 ![Chatbot](screenshots/chatbot.png)
 
-📖 Overview
+---
 
-CropWise is an AI-powered agricultural decision-support platform thathelps farmers identify crop diseases from leaf images and providesintelligent treatment recommendations using live weather information andLarge Language Models.
+# 📖 Overview
 
-The application integrates:
+CropWise is an AI-powered agricultural decision-support platform that enables farmers to identify crop diseases from leaf images and receive intelligent treatment recommendations.
 
-CNN-based disease detection
+The platform combines:
 
-Live weather intelligence
+- 🌱 CNN-based crop disease classification
+- 🌦️ Real-time weather intelligence
+- 🤖 Large Language Models (Groq Llama)
+- 🔗 LangChain orchestration
+- 💬 AI-powered agricultural chatbot
 
-AI-generated advisory reports
+---
 
-Agricultural chatbot
+# ✨ Key Features
 
-Modern responsive web interface
+- ✅ Classifies **38 disease & healthy crop classes**
+- ✅ Supports **14 crop species**
+- ✅ CNN-based deep learning disease detection
+- ✅ Real-time weather integration
+- ✅ AI-generated treatment recommendations
+- ✅ Preventive measures and fertilizer suggestions
+- ✅ Disease severity estimation
+- ✅ Interactive AI chatbot
+- ✅ Responsive web interface
+- ✅ FastAPI backend with REST APIs
+- ✅ Deployable on Render & Vercel
 
-✨ Key Features
+---
 
-✅ CNN-based crop disease detection
+# 🛠️ Tech Stack
 
-✅ Supports 38 disease/healthy classes
+## Frontend
 
-✅ Supports 14 crop species
+- HTML5
+- CSS3
+- JavaScript
 
-✅ Live weather integration
+## Backend
 
-✅ Disease severity estimation
+- FastAPI
+- Python
 
-✅ Organic & chemical treatment suggestions
+## Machine Learning
 
-✅ Cost estimation
+- TensorFlow
+- Keras (VGG16 Transfer Learning)
 
-✅ Recovery timeline
+## AI & LLM
 
-✅ Preventive measures
+- LangChain
+- Groq Llama 3
 
-✅ AI-powered agricultural chatbot
+## APIs
 
-✅ Multilingual responses
+- Weather API
 
-✅ Responsive UI
+## Deployment
 
-✅ Production deployment
+- Render
+- Vercel
 
-🌱 Supported Crops
+---
 
-Apple
+# 🧠 Model Details
 
-Blueberry
+| Property | Value |
+|----------|-------|
+| Model | CNN (VGG16 Transfer Learning) |
+| Dataset | PlantVillage |
+| Crop Species | 14 |
+| Disease Classes | 38 |
+| Framework | TensorFlow/Keras |
 
-Cherry
+---
 
-Corn (Maize)
+# 🔄 System Architecture
 
-Grape
-
-Orange
-
-Peach
-
-Bell Pepper
-
-Potato
-
-Raspberry
-
-Soybean
-
-Squash
-
-Strawberry
-
-Tomato
-
-🛠 Tech Stack
-
-Category          Technologies
-
-Frontend          HTML5, CSS3, JavaScriptBackend           Python, FastAPIDeep Learning     TensorFlow, Keras, MobileNetV2AI                LangChain, Groq LlamaWeather           WeatherAPIDeployment        Vercel, RenderVersion Control   Git, GitHub
-
-🧠 AI Model Information
-
-Property     Value
-
-Model        MobileNetV2-based CNNFramework    TensorFlow / KerasDataset      PlantVillageInput Size   224 × 224 × 3Classes      38Crops        14Output       Disease + Confidence
-
-🏗 Detailed System Architecture
-
-                    USER
-                      │
-      Upload Leaf Image + Enter City
+```text
+                    User
                       │
                       ▼
-       HTML/CSS/JavaScript Frontend (Vercel)
-                      │
-             POST /api/diagnose
+             Upload Leaf Image
                       │
                       ▼
-          FastAPI Backend (Render)
+            JavaScript Frontend
                       │
-      ┌───────────────┼────────────────┐
-      │               │                │
-      ▼               ▼                ▼
- Image Validation  Weather API   Temporary Storage
-      │               │
-      ▼               ▼
- TensorFlow CNN   Live Weather Data
-      │
-      ▼
- Disease Prediction
-(Plant + Disease + Confidence)
-      │
-      ▼
- LangChain Orchestrator
-      │
-      ▼
- Groq Llama LLM
-      │
-      ▼
- Structured JSON Advisory
-      │
-      ▼
- Dynamic Frontend Dashboard
+          Image + City Information
+                      │
+                      ▼
+            FastAPI Backend API
+                      │
+     ┌────────────────┼────────────────┐
+     │                │                │
+     ▼                ▼                ▼
+ CNN Disease     Weather API      LangChain
+ Prediction      Integration      Orchestrator
+     │                │                │
+     └────────────────┼────────────────┘
+                      ▼
+              Groq Llama-3 LLM
+                      │
+                      ▼
+        Structured AI Advisory Report
+                      │
+                      ▼
+             Frontend Dashboard
+```
 
-🔄 Complete Request Flow
+---
 
+# 🔄 Request Flow
+
+```text
 User Uploads Leaf Image
-        │
-        ▼
-Frontend creates FormData
+          │
+          ▼
+Frontend Creates FormData
 (Image + City)
-        │
-        ▼
+          │
+          ▼
 POST /api/diagnose
-        │
-        ▼
-FastAPI receives request
-        │
-        ▼
-Image saved temporarily
-        │
-        ▼
-CNN predicts disease
-        │
-        ▼
-Weather API fetches live weather
-        │
-        ▼
-Prediction + Weather
-        │
-        ▼
-LangChain Prompt
-        │
-        ▼
-Groq LLM
-        │
-        ▼
-Structured JSON
-        │
-        ▼
-Frontend updates dashboard
+          │
+          ▼
+FastAPI Backend
+          │
+          ├── CNN Prediction
+          ├── Weather API
+          ├── LangChain Prompt
+          └── Groq LLM
+          │
+          ▼
+Structured JSON Response
+          │
+          ▼
+Interactive Dashboard
+```
 
-🤖 Chatbot Architecture
+---
 
-User
- │
- ▼
-Frontend
- │
- ▼
+# 🤖 Chatbot Workflow
+
+```text
+User Question
+      │
+      ▼
+Frontend Chat Interface
+      │
+      ▼
 POST /api/chat
- │
- ▼
+      │
+      ▼
 FastAPI
- │
- ▼
-Conversation Memory
- │
- ▼
-PromptTemplate
- │
- ▼
-Groq LLM
- │
- ▼
-Response
- │
- ▼
-Chat UI
+      │
+      ▼
+LangChain Prompt
+      │
+      ▼
+Groq Llama-3
+      │
+      ▼
+AI Response
+      │
+      ▼
+Chat Interface
+```
 
-☁ Deployment Architecture
+---
 
-            GitHub Repository
-                 │
-      ┌──────────┴──────────┐
-      ▼                     ▼
-   Vercel                Render
- Frontend               Backend
-      │                     │
-      └──────────┬──────────┘
-                 ▼
-             HTTPS Users
+# 📂 Folder Structure
 
-📂 Folder Structure
-
-CropWise/
-├── backend/
+```text
+CropWise
+│
+├── backend
 │   ├── app.py
 │   ├── main_orchestrator.py
-│   ├── models/
-│   │   └── best_plant_model.keras
-│   ├── utils/
-│   │   ├── predictor.py
-│   │   └── weather_tool.py
-│   └── requirements.txt
-├── frontend/
+│   ├── predictor.py
+│   ├── weather_tool.py
+│   ├── requirements.txt
+│   └── models
+│       └── best_plant_model.keras
+│
+├── frontend
 │   ├── index.html
 │   ├── diagnose.html
 │   ├── chatbot.html
 │   ├── style.css
 │   └── script.js
-├── screenshots/
+│
+├── screenshots
+│   ├── home.png
+│   ├── diagnosis.png
+│   ├── report.png
+│   └── chatbot.png
+│
 ├── README.md
-├── LICENSE
-└── .gitignore
+└── LICENSE
+```
 
-🔌 API Endpoints
+---
 
-Method   Endpoint          Description
+# ⚙️ Installation
 
-GET      /               Health CheckPOST     /api/diagnose   Disease DiagnosisPOST     /api/chat       Agricultural Chatbot
+## Clone Repository
 
-⚙ Installation
-
-git clone https://github.com/yourusername/CropWise.git
+```bash
+git clone https://github.com/<YOUR_GITHUB_USERNAME>/CropWise.git
 cd CropWise
+```
 
-python -m venv venv
+---
 
-# Windows
-venv\Scripts\activate
+## Backend Setup
 
-# Linux/Mac
-source venv/bin/activate
-
-pip install -r backend/requirements.txt
-
-🔐 Environment Variables
-
-Create a .env file inside backend/
-
-GROQ_API_KEY=your_groq_api_key
-WEATHER_API_KEY=your_weather_api_key
-
-▶ Running the Project
-
+```bash
 cd backend
-uvicorn app:app --reload
 
-Backend
+pip install -r requirements.txt
 
-http://127.0.0.1:8000
+python app.py
+```
 
-Swagger
+---
 
-http://127.0.0.1:8000/docs
+## Frontend
 
-🚀 Future Scope
+Open
 
-Retrieval-Augmented Generation (RAG)
+```
+frontend/index.html
+```
 
-ChromaDB Integration
+or deploy using Vercel.
 
-Agricultural Knowledge Base
+---
 
-Grad-CAM Explainability
+# 🚀 Future Enhancements
 
-Fertilizer Recommendation Engine
+- 📱 Android application
+- 🌍 Multi-language support
+- 📍 GPS-based weather detection
+- 📷 Live camera disease detection
+- ☁️ Cloud image storage
+- 📈 Farmer analytics dashboard
+- 🔔 Smart crop alerts
+- 🌾 Yield prediction
 
-Crop Yield Prediction
+---
 
-Historical Crop Health Tracking
+# 👩‍💻 Author
 
-Authentication & User Accounts
+**Dhanashree Chandekar**
 
-Mobile Application
+- GitHub: https://github.com/<YOUR_GITHUB_USERNAME>
+- LinkedIn: https://www.linkedin.com/in/<YOUR_LINKEDIN_USERNAME>/
 
-Regional Language Support
+---
 
-⚠ Disclaimer
+# ⭐ Support
 
-CropWise is an educational and decision-support tool. Farmers shouldconsult agricultural experts before applying treatments on a largescale.
+If you found this project helpful, consider giving it a ⭐ on GitHub!
 
-👩‍💻 Author
+---
 
-Dhanashree Chandekar
+## 📄 License
 
-B.Tech -- Artificial IntelligenceNational Institute of Technology (NIT) Rourkela
-
-Email: dchandekar2006@gmail.com
+This project is licensed under the MIT License.
