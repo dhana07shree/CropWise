@@ -81,7 +81,7 @@ The platform combines:
 ## Machine Learning
 
 - TensorFlow
-- Keras (VGG16 Transfer Learning)
+- Keras (MobileNetV2 Transfer Learning)
 
 ## AI & LLM
 
@@ -103,7 +103,7 @@ The platform combines:
 
 | Property | Value |
 |----------|-------|
-| Model | CNN (VGG16 Transfer Learning) |
+| Model | CNN (MobileNetV2 Transfer Learning) |
 | Dataset | PlantVillage |
 | Crop Species | 14 |
 | Disease Classes | 38 |
